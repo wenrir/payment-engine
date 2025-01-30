@@ -45,3 +45,65 @@ docker compose run --rm payment-engine cargo run -- transactions.csv > accounts.
 # or 
 docker compose up
 #+end_src
+
+
+* Design
+
+** TODO Requirements
+
++ Reads first trailing argument provided to cargo run.
+  + The argument is the input csv file.
++ Outputs result to stdout.
++ The input csv has 4 columns and are given in the assignment document (not disclosed in this repo).
++ The output csv has 4 columns and are given in the assignment document (not disclosed in this repo)
++ Transactions are available in the input csv.
++ ...
+** TODO Assumptions
+
+The implementation considers the following assumptions:
+
++ 1 account per client,
++ Clients are created dynamically based on CSV input
++ Clients are represented by `u16` data type.
++ The application does not expose any other CLI than reading the first of trailing arguments.
+** Architecture
+
+Essentially the payment engine is a state machine, that handles a set of transaction events in chronologically order. 
+
+A transaction is an immutable data structure that handles the mutable account data structure.
+
+States are data structures that represent the outcome from transactions, Open or Frozen.
+Payment engine has only one state data structure, `Engine` which represents the outcome of all transactions.
+
+The payment engine will run as a separate tokio task and communicated transactions are through a channel, this is done to make it possible to not only use csv files but be generic.
+
+
+** Method
+
+Payment engine tries to follow the guidelines of [[https://github.com/tigerbeetle/tigerbeetle/blob/main/docs/TIGER_STYLE.md#why-have-style][TIGER STYLE]]. Even though it might not always apply to the project or language, following a set of carefully considered rules allows for more safety, efficiency and maintainability than trying to define your own within the limited timeframe the project was created.
+
+*** A word on safety
+
+Payment engine tries to comply to NASAs [[https://spinroot.com/gerard/pdf/P10.pdf][The Power of Ten - Rules for Developing Safety Critical Code]], even though it might be seen as overkill for this assignment. Keeping these in mind during the implementation makes the author more comfortable with the overall "safety and robustness".
+
+*** Compiler driven development
+
+As the assignment is not supposed to be so excessive, rather than focusing on runtime code, the development started by modeling the payment engine within Rust type system. 
+
+This guarantees: 
++ Thread safety
++ 100% code coverage
++ Syntax correctness 
+
+Which in turn enables the project to be designed in compiled iterations, without much restrictions (at first) on functional requirements.
+
+The payment engine was first implemented by relational structs, methods and functions second. 
+
+Apart from default linting, the project places additional restrictions to make more robust code.
+
+*** Testing
+
+Testing is mainly done with integration tests, such as creating dummy csv data and passing it to the application.
+
+Unit tests will cover basic functionalities such as deposit, withdrawal, resolve etc.
+
