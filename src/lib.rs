@@ -32,13 +32,13 @@ pub async fn run_from_csv(path: &str) -> Result<(), EngineError> {
     );
     assert!(
         payment_engine_handler.await.is_ok(),
-        "Payement engine did not finish"
+        "Payment engine did not finish"
     );
     Ok(())
 }
 
 /// Starts the payment engine in standalone mode
-/// Continously reads for transactions,
+/// Continuously reads for transactions,
 /// and returns Tx for user to communicate with engine.
 pub async fn run_stand_alone() -> Result<Tx<EngineEvent>, EngineError> {
     let (transmit, recv) = create_engine_channel();

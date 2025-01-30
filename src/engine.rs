@@ -46,7 +46,7 @@ pub(crate) async fn run<S: Write>(
     let mut engine = Engine::new();
     /// Helper macro for decision logic.
     /// There are 2 transaction categories, [deposit, withdrawal] and [dispute, resolve, chargeback]
-    /// Macro created to minimize repitition in code.
+    /// Macro created to minimize repetition in code.
     /// Type 1 inputs
     /// + target => Target account
     /// + tx => Transaction id
@@ -77,7 +77,7 @@ pub(crate) async fn run<S: Write>(
             // There are quite many branches here ... probably would be a better idea to break out the macro to functions.
             if let Some(transaction) = engine.transaction_history.get(&$tx) {
                 if transaction.dispute != $cond {
-                    continue; // Let's not go unecessarily deep.
+                    continue; // Let's not go unnecessarily deep.
                 }
 
                 if let Some(amount) = Some(transaction.amount) {

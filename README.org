@@ -155,7 +155,7 @@ Some safety issues:
 + Since I'm using an unbounded channel, there is not guarantee that all transactions are received, during very heavy load this would be a problem. For this usecase however, I think it's OK.
 + Due to the nature of the assignment, it's difficult to solve it (in short time) with all memory statically allocated at startup. Thus, since functionality of the engine is dynamic it might lead to unpredictable behavior..
 + Main control flow is in one function, leading to a large function with quite poor structure.
-+ Even though I've tried to maintain error handling, it could definetily be improved.
++ Even though I've tried to maintain error handling, it could definitely be improved.
 
 Some considerations:
 + All transactions are immutable and does not change throughout the application.
@@ -193,5 +193,3 @@ Initially I wanted to go for a more functional approach, with pure-functions and
 
 The mutated engine with async channels was in the end more well performing.
 
-
-#  LocalWords:  definetily
