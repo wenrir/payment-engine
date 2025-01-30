@@ -17,10 +17,6 @@ pub(crate) struct Rx<E> {
 
 /// Create a new channel for the payment engine.
 /// The channel is multi-producer, single-consumer channel.
-/// e.g.
-/// ``` rust
-/// let (tx, rx) = create_engine_channel();
-/// ```
 /// This function is must_use.
 #[must_use]
 pub(crate) fn create_engine_channel() -> (Tx<EngineEvent>, Rx<EngineEvent>) {

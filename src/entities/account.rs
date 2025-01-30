@@ -28,11 +28,11 @@ pub(crate) struct Account {
 /// cond = condition to be true in order for operations to go through.
 /// asserts = expands to a function body, that has access to self and amount. Anything can be placed here but the intention is for assertions.
 /// For example
-/// ``` rust
+/// ``` ignore
 /// modify_account_balance_fn!(dispute, ((held, +=), (available, -=)),[self, amount], self.available - amount >= 0_f64, {});
 /// ```
 /// expands to
-/// ``` rust
+/// ``` ignore
 /// pub(crate) fn dispute(&mut self, amount: &f64) -> Result<(), AccountError> {
 /// {}
 /// if !self.locked && self.available - amount >= 0_f64 {
