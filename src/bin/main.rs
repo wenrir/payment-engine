@@ -38,6 +38,4 @@ async fn main() {
             );
         }
     };
-
-    //println!("path: {:?}", path)
 }

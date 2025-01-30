@@ -43,6 +43,16 @@ mod tests {
         test_client!(handler, path, "".to_string());
     }
     #[tokio::test]
+    async fn test_precision() {
+        let path = test_csv!("precision_test.csv");
+        test_client!(handler, path, "client,available,held,total,locked\n1,0.1,0,0.1,false\n2,0.1234,0,0.1234,false\n3,0.1,0,0.1,false\n4,0.02,0,0.02,false\n5,0.1,0,0.1,false\n6,0,0,0,false\n7,0,0,0,false\n".to_string());
+    }
+    #[tokio::test]
+    async fn test_duplicate_tx() {
+        let path = test_csv!("duplicate_tx_test.csv");
+        test_client!(handler, path, "client,available,held,total,locked\n1,2,0,2,false\n2,0,0,0,false\n".to_string());
+    }
+    #[tokio::test]
     async fn test_header_only() {
         let path = test_csv!("header_only_test.csv");
         test_client!(handler, path, "".to_string());

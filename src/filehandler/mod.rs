@@ -41,6 +41,6 @@ pub(crate) fn csv_to_stdout<S: Write>(
     for account in accounts {
         wtr.serialize(account)?;
     }
-    wtr.flush()?;
+    assert!(wtr.flush().is_ok(), "Unable to flush stream");
     Ok(())
 }
