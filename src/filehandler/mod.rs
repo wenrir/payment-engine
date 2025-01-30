@@ -35,7 +35,10 @@ pub(crate) fn read_csv(file_path: &str) -> Result<Reader<File>, FileError> {
 /// + Maybe use AsyncWrite instead?
 /// + Should this be in filehandler?
 #[allow(dead_code)]
-pub(crate) fn csv_to_stdout<S: Write>(accounts: Vec<&Account>, stream: S) -> Result<(), FileError> {
+pub(crate) fn csv_to_stdout<S: Write>(
+    accounts: Vec<&Account>,
+    stream: S,
+) -> Result<(), FileError> {
     let mut wtr = Writer::from_writer(stream);
     for account in accounts {
         wtr.serialize(account)?;

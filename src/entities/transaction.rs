@@ -3,8 +3,8 @@
 use serde::Deserialize;
 
 #[allow(dead_code)]
-/// Input transaction.
 #[derive(Deserialize, Debug)]
+/// Input transactions.
 pub struct Transaction {
     #[serde(rename(deserialize = "type"))]
     /// Type of the transaction.
@@ -17,9 +17,9 @@ pub struct Transaction {
     pub(crate) amount: Option<f64>,
 }
 
-/// Transaction types
 #[derive(Deserialize, Debug)]
 #[serde(rename_all = "lowercase")]
+/// Transaction types
 pub(crate) enum TransactionType {
     Deposit,
     Withdrawal,
