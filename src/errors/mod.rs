@@ -5,13 +5,6 @@ use thiserror::Error;
 use tokio::sync::mpsc::error::SendError;
 use tokio::task::JoinError;
 #[derive(Error, Debug)]
-#[allow(unused)]
-/// Processing related errors
-pub(crate) enum ProcessError {
-    #[error("Not possible create account `{0}`")]
-    AccountCreation(String),
-}
-#[derive(Error, Debug)]
 /// File related errors.
 pub enum FileError {
     #[error("Unable read csv file: `{0}`")]

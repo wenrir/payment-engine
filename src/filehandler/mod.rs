@@ -8,7 +8,6 @@ use std::ffi::OsStr;
 use std::fs::File;
 use std::io::Write;
 use std::path::Path;
-#[allow(unused)]
 /// Reads a csv file.
 /// Expects a valid path csv as input
 /// Returns a reader with the content of csv file.
@@ -34,7 +33,6 @@ pub(crate) fn read_csv(file_path: &str) -> Result<Reader<File>, FileError> {
 /// Considerations:
 /// + Maybe use AsyncWrite instead?
 /// + Should this be in filehandler?
-#[allow(dead_code)]
 pub(crate) fn csv_to_stdout<S: Write>(
     accounts: Vec<&Account>,
     stream: S,

@@ -2,7 +2,6 @@
 use serde::{Serialize, Serializer};
 
 use crate::errors::AccountError;
-#[allow(dead_code)]
 #[derive(Serialize, Default, Debug)]
 /// Account data.
 pub(crate) struct Account {
@@ -45,7 +44,6 @@ pub(crate) struct Account {
 /// ```
 macro_rules! modify_account_balance_fn {
             ($name:ident, ($( ($target:ident, $operation:tt) ),*), [$self:ident, $amount:ident], $cond:expr, $asserts:block) => {
-              #[allow(dead_code)]
                 pub(crate) fn $name(
                     &mut $self,
                     $amount: &f64
@@ -74,7 +72,6 @@ impl Account {
     modify_account_balance_fn!(withdrawl, ((total, -=), (available, -=)),[self, amount], self.available - amount >= 0_f64, {});
     modify_account_balance_fn!(dispute, ((held, +=), (available, -=)),[self, amount], self.available - amount >= 0_f64, {});
     modify_account_balance_fn!(resolve, ((held, -=), (available, +=)),[self, amount], self.held - amount >= 0_f64, {});
-    #[allow(dead_code)]
     pub(crate) fn chargeback(
         &mut self,
         amount: &f64,
@@ -87,7 +84,6 @@ impl Account {
         Ok(())
     }
 
-    #[allow(unused)]
     pub(crate) fn new(client_id: u16) -> Self {
         Self {
             client: client_id,

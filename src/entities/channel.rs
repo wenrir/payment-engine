@@ -5,7 +5,6 @@ use super::EngineEvent;
 use tokio::sync::mpsc::{channel, Receiver, Sender};
 
 /// An Tx struct is used to send to a channel.
-#[allow(unused)]
 pub struct Tx<E>(pub Sender<E>);
 /// An Rx struct is used on the channel to receive.
 ///
@@ -23,7 +22,6 @@ pub(crate) struct Rx<E> {
 /// let (tx, rx) = create_engine_channel();
 /// ```
 /// This function is must_use.
-#[allow(unused)]
 #[must_use]
 pub(crate) fn create_engine_channel() -> (Tx<EngineEvent>, Rx<EngineEvent>) {
     // Outgoing MQTT queue through multi-producer, single-consumer channel. Many values can be sent.
