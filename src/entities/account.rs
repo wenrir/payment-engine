@@ -1,4 +1,4 @@
-//! Account sepcific data structs and implementations
+//! Account specific data structs and implementations
 use serde::{Serialize, Serializer};
 
 use crate::errors::AccountError;
@@ -93,7 +93,7 @@ impl Account {
 }
 /// Serializes a float by rounding it to 4 decimals.
 /// Trims away 0s and `.`, e.g 1.0000 => 1 while 1.5000 => 1.5
-/// Percision requirement.
+/// Precision requirement.
 fn serialize_round_float<S>(f: &f64, s: S) -> Result<S::Ok, S::Error>
 where
     S: Serializer,
