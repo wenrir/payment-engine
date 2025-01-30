@@ -7,12 +7,16 @@ The project is part of an assignment and implements a simple payments engine, it
 * Prerequisites
 
 ** Local
+
 You may run the application in your local environment, it requires
 
 + Any modern version of rustc, project developed with : `rustc 1.82.0 (f6e511eec 2024-10-15) (built from a source tarball)` 
 + Cargo, same as rustc, any modern version should be fine. Project built with: `cargo 1.82.0 (8f40fc59f 2024-08-21)`
 
 ** Docker
+
+Docker images also available, requirements:
+
 + Any modern version of docker. (https://docs.docker.com/build/)
 + Any version of docker compose.(https://docs.docker.com/compose/)
  
@@ -47,16 +51,15 @@ docker compose up
 
 * Design
 
-** TODO Requirements
+** Requirements
 
 + Reads first trailing argument provided to cargo run.
   + The argument is the input csv file.
-+ Outputs result to stdout.
++ Outputs result to stdout, nothing additional needed.
 + The input csv has 4 columns and are given in the assignment document (not disclosed in this repo).
 + The output csv has 4 columns and are given in the assignment document (not disclosed in this repo)
-+ Transactions are available in the input csv.
-+ ...
-** TODO Assumptions
++ Transactions are available in the input csv and in chronological order.
+** Assumptions
 
 The implementation considers the following assumptions:
 
@@ -64,9 +67,11 @@ The implementation considers the following assumptions:
 + Clients are created dynamically based on CSV input
 + Clients are represented by `u16` data type.
 + The application does not expose any other CLI than reading the first of trailing arguments.
+ + The transactions occur chronologically in the file.
+
 ** Architecture
 
-Essentially the payment engine is a state machine, that handles a set of transaction events in chronologically order. 
+Essentially the payment engine is a state machine that holds account information and handles a incoming transactions in form of events.
 
 A transaction is an immutable data structure that handles the mutable account data structure.
 
@@ -76,13 +81,11 @@ Payment engine has only one state data structure, `Engine` which represents the 
 The payment engine will run as a separate tokio task and communicated transactions are through a channel, this is done to make it possible to not only use csv files but be generic.
 
 
-** Method
+*** Method
 
-Payment engine tries to follow the guidelines of [[https://github.com/tigerbeetle/tigerbeetle/blob/main/docs/TIGER_STYLE.md#why-have-style][TIGER STYLE]]. Even though it might not always apply to the project or language, following a set of carefully considered rules allows for more safety, efficiency and maintainability than trying to define your own within the limited timeframe the project was created.
-
-*** A word on safety
-
-Payment engine tries to comply to NASAs [[https://spinroot.com/gerard/pdf/P10.pdf][The Power of Ten - Rules for Developing Safety Critical Code]], even though it might be seen as overkill for this assignment. Keeping these in mind during the implementation makes the author more comfortable with the overall "safety and robustness".
+Payment engine tries to follow the guidelines of [[https://github.com/tigerbeetle/tigerbeetle/blob/main/docs/TIGER_STYLE.md#why-have-style][TIGER STYLE]].
+ 
+Even though it might not always apply to the project or language, following a set of carefully considered rules allows for more safety, efficiency and maintainability than trying to define your own within the limited timeframe the project was created.
 
 *** Compiler driven development
 
@@ -99,9 +102,70 @@ The payment engine was first implemented by relational structs, methods and func
 
 Apart from default linting, the project places additional restrictions to make more robust code.
 
+*** Async and Transaction reading
+
+I choose a async approach in order to efficiently read Transactions, the payment engine is independent of the reader and thus could easily be spawned in a different usecase. E.g. as per doc, from TCP requests.
+
+*** Channels or shared memory?
+
+For this project I thought going for async channels was a good option as channels, unlike shared-state concurrency methods, offer simple message passing between tasks. Less "implementation risk" than shared-state concurrency but has some trade-offs:
+
++ Latency - Buffering delays
++ Throughput - Since the data is copied over the channel there's higher overhead
+
+A good reason to use channels: 
++ Reader <> sender relationship, meaning that the a transaction is processed before another is sent.
+
+This method works well as per `acce9b455588a9aa2a7dce568b06da93a9a8f9fb`, but if we introduce many clients the performance would gradually become worse.
+
+However last minute I reconsidered using channels as per performance.
+
+Benchmark with channels (`benches/speed.rs`):
+
+#+begin_src sh
+  cargo bench
+  #...
+  speed                   time:   [179.06 ns 179.94 ns 180.97 ns]
+#+end_src
+
+
+Using shared buffer following this method : https://blog.digital-horror.com/blog/how-to-avoid-over-reliance-on-mpsc/ and benchmark:
+
+#+begin_src sh
+speed                   time:   [158.49 ns 158.78 ns 159.19 ns]
+                        change: [-12.547% -11.875% -11.248%] (p = 0.00 < 0.05)
+                        Performance has improved.
+#+end_src
+
+It might be a good approach to use a shared state instead but at this stage it's too late to redesign for that approach and keeping tests up-to-date.
+
+*** Safety
+
+Some safety issues:
+
++ Since I'm using an unbounded channel, there is not guarantee that all transactions are received, during very heavy load this would be a problem. For this usecase however, I think it's OK.
++ Due to the nature of the assignment, it's difficult to solve it (in short time) with all memory statically allocated at startup. Thus, since functionality of the engine is dynamic it might lead to unpredictable behavior..
++ Main control flow is in one function, leading to a large function with quite poor structure. Not maintainable.
+
+Some considerations:
++ All transactions are immutable and does not change throughout the application.
++ Only very simple, explicit control flow for clarity, matches and Results. 
++ I've been trying to keep abstractions to a minimum, every abstraction has some kind of cost.
++ Tried to use explicitly sized types, exception for tokio channels that required usize.
++ Keeping dependency usage to a minimum,  in general, inevitably lead to multiple issues related to safety and performance.
++ Using assertion, NASAs  [[https://spinroot.com/gerard/pdf/P10.pdf][The Power of Ten – Rules for Developing Safety Critical Code]] brings this up in details. In short, assertion failures are unexpected and the only correct way to handle them is to crash.
+
+
 *** Testing
 
 Testing is mainly done with integration tests, such as creating dummy csv data and passing it to the application.
 
 Unit tests will cover basic functionalities such as deposit, withdrawal, resolve etc.
 
+As well as relying on rusts compiler.
+
+*** A word on (Im)mutability and functional programming
+
+Initially I wanted to go for a more functional approach, with pure-functions and leaving mutability to a minimum. However, after sketching out my models with the type system and reading the requirements, even though possible, it would not really perform as well as I would've wanted. (I tried...)
+
+The mutated engine with async channels was in the end more well performing.

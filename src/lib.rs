@@ -26,9 +26,14 @@ pub async fn run_from_csv(path: &str) -> Result<(), EngineError> {
         let tx = transaction?;
         transmit.0.send(EngineEvent::Tx(tx)).await?; // TODO capture this.
     }
-
-    transmit.0.send(EngineEvent::Report()).await?;
-    let _ = payment_engine_handler.await?;
+    assert!(
+        transmit.0.send(EngineEvent::Report()).await.is_ok(),
+        "Unable to report to stdout."
+    );
+    assert!(
+        payment_engine_handler.await.is_ok(),
+        "Payement engine did not finish"
+    );
     Ok(())
 }
 
@@ -36,8 +41,10 @@ pub async fn run_from_csv(path: &str) -> Result<(), EngineError> {
 /// Continously reads for transactions,
 /// and returns Tx for user to communicate with engine.
 pub async fn run_stand_alone() -> Result<Tx<EngineEvent>, EngineError> {
-    println!("standalone");
     let (transmit, recv) = create_engine_channel();
-    let _ = tokio::spawn(run(recv, stdout())).await;
+    assert!(
+        tokio::spawn(run(recv, stdout())).await.is_ok(),
+        "Unable to start engine!"
+    );
     Ok(transmit)
 }

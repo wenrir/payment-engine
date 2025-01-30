@@ -35,7 +35,7 @@ unused_extern_crates = "deny"
 unused_macros = "deny"
 unused_imports = "deny"
 deprecated_in_future = "deny"
-missing_docs = "deny"
+missing_docs = "warn"
 
 
 [lints.clippy]
@@ -45,4 +45,33 @@ vec_init_then_push = "allow"
 
 [dev-dependencies]
 itertools = "0.14.0"
+criterion = "0.3"
+
+[[bench]]
+name = "speed"
+harness = false
+
+[profile.dev]
+opt-level = 3
+debug = false
+strip = "none"
+debug-assertions = false
+overflow-checks = false
+lto = true
+panic = 'unwind'
+incremental = false
+codegen-units = 16
+rpath = false
+
+[profile.release]
+opt-level = 3
+debug = false
+strip = "none"
+debug-assertions = false
+overflow-checks = false
+lto = true
+panic = 'unwind'
+incremental = false
+codegen-units = 16
+rpath = false
 

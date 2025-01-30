@@ -22,5 +22,7 @@ pub(crate) struct Rx<E> {
 pub(crate) fn create_engine_channel() -> (Tx<EngineEvent>, Rx<EngineEvent>) {
     // Outgoing MQTT queue through multi-producer, single-consumer channel. Many values can be sent.
     let (transmit, recv) = channel(100); // usize ...
+    assert!(!transmit.is_closed());
+    assert!(!recv.is_closed());
     (Tx(transmit), Rx { receive: recv })
 }
