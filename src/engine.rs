@@ -6,32 +6,21 @@ use crate::filehandler::csv_to_stdout;
 use std::io::Write;
 use tracing::{event, span, Level};
 
-#[allow(unused_imports)]
-use super::entities::{
-    account::Account,
-    transaction::{Transaction, TransactionType},
-};
-#[allow(unused_imports)]
-use super::errors::ProcessError;
+use super::entities::{account::Account, transaction::TransactionType};
 
 #[cfg(test)]
 use itertools::Itertools;
 use std::collections::HashMap;
-#[allow(dead_code)]
 enum AccountState {
     Open,
-    #[allow(dead_code)]
     Frozen,
 }
 struct Engine {
-    #[allow(dead_code)]
     account: Account,
-    #[allow(dead_code)]
     transaction_queue: HashMap<u32, f64>, // tx id & amount
     state: AccountState,
 }
 impl Engine {
-    #[allow(unused)]
     pub(crate) fn new(acc: Account) -> Self {
         Engine {
             account: acc,
@@ -40,7 +29,6 @@ impl Engine {
         }
     }
 }
-#[allow(unused)]
 pub(crate) async fn run<S: Write>(
     mut rx: Rx<EngineEvent>,
     report_stream: S,
@@ -71,7 +59,7 @@ pub(crate) async fn run<S: Write>(
     macro_rules! process_transaction {
         ($target:expr, $tx:expr, $amount:expr, $method:ident) => {
             if let Some(amount) = $amount {
-                $target.account.$method(&amount);
+                let _ = $target.account.$method(&amount);
                 $tx.map(|tx| $target.transaction_queue.insert(tx, amount));
             }
         };
@@ -149,10 +137,6 @@ pub(crate) async fn run<S: Write>(
                     .collect();
                 csv_to_stdout(accounts, report_stream)?;
                 break;
-            }
-            _ => {
-                event!(Level::ERROR, "Unsupported event");
-                return Err(EngineError::Event("".to_string()));
             }
         }
     }

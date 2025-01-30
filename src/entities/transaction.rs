@@ -2,7 +2,6 @@
 
 use serde::Deserialize;
 
-#[allow(dead_code)]
 #[derive(Deserialize, Debug)]
 /// Input transactions.
 pub struct Transaction {
