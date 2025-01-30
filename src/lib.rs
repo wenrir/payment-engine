@@ -5,6 +5,9 @@ mod entities;
 mod errors;
 mod filehandler;
 
+#[cfg(test)]
+mod tests;
+
 use std::io::stdout;
 
 use crate::engine::run;
