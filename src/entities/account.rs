@@ -3,8 +3,8 @@ use serde::{Serialize, Serializer};
 
 use crate::errors::AccountError;
 #[allow(dead_code)]
-/// Account data.
 #[derive(Serialize, Default, Debug)]
+/// Account data.
 pub(crate) struct Account {
     /// The owner of the account.
     pub(crate) client: u16,
@@ -75,7 +75,10 @@ impl Account {
     modify_account_balance_fn!(dispute, ((held, +=), (available, -=)),[self, amount], self.available - amount >= 0_f64, {});
     modify_account_balance_fn!(resolve, ((held, -=), (available, +=)),[self, amount], self.held - amount >= 0_f64, {});
     #[allow(dead_code)]
-    pub(crate) fn chargeback(&mut self, amount: &f64) -> Result<(), AccountError> {
+    pub(crate) fn chargeback(
+        &mut self,
+        amount: &f64,
+    ) -> Result<(), AccountError> {
         if self.held - amount >= 0_f64 {
             self.locked = true;
             self.total -= amount;
