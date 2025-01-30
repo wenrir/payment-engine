@@ -1,0 +1,36 @@
+#+title: payment-engine
+
+* Payment engine
+
+** Purpose
+
+The project is part of an assignment and implements a simple payments engine, it reads and outputs data to stdout based on events in the input CSV.
+
+** Prerequisites
+
+*** Local
+You may run the application in your local environment, it requires
+
++ Any modern version of rustc, project developed with : `rustc 1.82.0 (f6e511eec 2024-10-15) (built from a source tarball)` 
++ Cargo, same as rustc, any modern version should be fine. Project built with: `cargo 1.82.0 (8f40fc59f 2024-08-21)`
+
+*** Docker
++ Any modern version of docker. (https://docs.docker.com/build/)
++ Any version of docker compose.(https://docs.docker.com/compose/)
+ 
+
+** Usage
+
+*** Local
+
+The application only accepts one trailing argument to the binary, it does not expose any cli. 
+#+name: usage
+#+begin_src shell
+cargo run -- transactions.csv > accounts.csv
+#+end_src
+
+Where transactions.csv contains csv transaction data with format;
+#+begin_src csv
+type, client, tx, amount
+#+end_src
+
