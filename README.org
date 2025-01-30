@@ -34,3 +34,14 @@ Where transactions.csv contains csv transaction data with format;
 type, client, tx, amount
 #+end_src
 
+
+*** Docker
+
+You can also use docker to run the program.
+
+#+name: usage docker
+#+begin_src shell
+docker compose run --rm payment-engine cargo run -- transactions.csv > accounts.csv
+# or 
+docker compose up
+#+end_src
