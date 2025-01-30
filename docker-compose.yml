@@ -1,0 +1,23 @@
+x-command: &command
+  - "cargo"
+  - "run"
+  - "--"
+  - "transactions.csv"
+  - ">"
+  - "accounts.csv"
+
+x-build: &build
+  context: .
+  target: base
+  dockerfile: ./docker/Dockerfile
+
+services:
+  payment-engine:
+    container_name: payment-engine
+    build:
+      <<: *build
+      args:
+        - MODULE=engine
+    platform: linux/x86_64
+    volumes:
+      - ./:/engine
